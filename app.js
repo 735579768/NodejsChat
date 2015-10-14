@@ -10,15 +10,16 @@ io.set('log level', 1);
 
 //WebSocket连接监听
 io.on('connection', function (socket) {
-  socket.emit('open');//通知客户端已连接
-
+  
+  //通知客户端已连接
+  socket.emit('open');
   // 打印握手信息
   // console.log(socket.handshake);
 
   // 构造客户端对象
   var client = {
     socket:socket,
-    name:false,
+    name:'游客',
     color:getColor()
   }
 
@@ -27,19 +28,17 @@ io.on('connection', function (socket) {
     var obj = {time:getTime(),color:client.color};
 
     // 判断是不是第一次连接，以第一条消息作为用户名
-    if(!client.name){
+    if(client.name=='游客'){
         client.name = msg;
         obj['text']=client.name;
         obj['author']='System';
         obj['type']='welcome';
         console.log(client.name + ' login');
-
         //返回欢迎语
         socket.emit('system',obj);
         //广播新用户已登陆
         socket.broadcast.emit('system',obj);
      }else{
-
         //如果不是第一次的连接，正常的聊天消息
         obj['text']=msg;
         obj['author']=client.name;      
@@ -69,6 +68,8 @@ io.on('connection', function (socket) {
     });
 
 });
+
+
 
 //express基本配置
 app.configure(function(){
