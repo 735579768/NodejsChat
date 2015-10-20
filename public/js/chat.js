@@ -26,11 +26,11 @@ window.chatconn=function(){
 		socket.on('system',function(json){
 			var p = '';
 			if(myName==json.text) status.text(myName + ': ').css('color', json.color);
-			p = '<p style="background:'+json.color+'">系统消息 @ '+ json.time+ ' : 欢迎 ' + json.text +'</p>';
+			p = '<p style="color:'+json.color+'">系统消息 @ '+ json.time+ ' : 欢迎 ' + json.text +'</p>';
 			content.prepend(p);
 		});
 	   socket.on('userleft',function(json){
-		p = '<p style="background:'+json.color+'">系统消息 @ '+ json.time+ ' : 拜拜 ' + json.text +'</p>';
+		p = '<p style="color:'+json.color+'">系统消息 @ '+ json.time+ ' : 拜拜 ' + json.text +'</p>';
 		content.prepend(p);
 		});
 		//监听message事件，打印消息信息
@@ -46,6 +46,10 @@ window.chatconn=function(){
 	//通过“回车”提交聊天信息
 	input.keydown(function(e) {
 		if (e.keyCode === 13) {
+			if(!socket){
+				alert('没有连接');
+				return false;
+				}
 			var msg = $(this).val();
 			if (!msg) return;
 			socket.emit('message',msg);

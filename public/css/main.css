@@ -140,6 +140,7 @@ div {width:500px;}
 
 .cl:after{ content:''; display:block; width:100%; clear:both;}
 #content { 
+height:300px; overflow:auto;
     padding:5px; 
     background:#f5f5f5; 
     border-radius:5px;
