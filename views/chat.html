@@ -2,18 +2,23 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Socket.io - Simple chat</title>
+<title>简单聊天室</title>
 <link rel="stylesheet" type="text/css" href="css/main.css">
 <script src="js/jquery-1.9.1.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/chat.js"></script>
 </head>
 <body>
-<h1>Socket.io - Simple chat room</h1>
+<h1>聊天室</h1>
 <div>
-<span id="status">Connecting...</span>
-<input type="text" id="input"/><input onClick="socket.disconnect();" type="button" value="断开连接" />
+<a href="javascript:;" onClick="chatconn();" class="btn">连接</a>
+<a href="javascript:;" onClick="disconn();" class="btn">断开连接</a>
+<div class="form-group">
+<span class="form-label" id="status">未连接</span>
+<input type="text" class="form-control" id="input"/>
 </div>
-<div id="content"></div>
+</div>
+<div id="numusers">0个</div>
+<div id="content" class="cl"></div>
 </body>
 </html>
