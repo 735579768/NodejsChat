@@ -1,11 +1,11 @@
-//引入程序包
+//引入程序包	
 var express = require('express')
   , path = require('path')
   , db= require('mysql')
   , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server);
-
+  
 
 //数据库连接
 //var conn = db.createConnection({
@@ -25,6 +25,7 @@ var express = require('express')
 io.set('log level', 1); 
 
 var numUsers = 0;
+var clientLists=new Array();
 //WebSocket连接监听
 io.on('connection', function (socket) {
   //console.log(socket);
@@ -33,8 +34,7 @@ io.on('connection', function (socket) {
   ++numUsers;
   socket.broadcast.emit('usernum',numUsers+'个用户');
   socket.emit('usernum',numUsers+'个用户');
- 
-  
+  //socket.emit('dump',sessionID);
   // 打印握手信息
   // console.log(socket.handshake);
 
@@ -44,6 +44,8 @@ io.on('connection', function (socket) {
     name:'',
     color:getColor()
   }
+  clientLists.push(client);
+ // console.log(socket);
   //设置用户名标识
   socket.on('setusername',function(msg){
 	   client.name=msg;
@@ -91,6 +93,7 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use(session(app));
 });
 
 
@@ -99,9 +102,12 @@ app.configure('development', function(){
 });
 
 // 指定webscoket的客户端的html文件
-app.get('/', function(req, res){
+app.get('/', function(req, res,next){
   res.sendfile('views/chat.html');
+ // res.sendfile('you viewed this page ' + req.session.views[''views/chat.html''] + ' times')
 });
+
+
 
 server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
@@ -117,3 +123,8 @@ var getColor=function(){
                 'orange','blue','blueviolet','brown','burlywood','cadetblue'];
   return colors[Math.round(Math.random() * 10000 % colors.length)];
 }
+var dump=function(obj){
+	if(clientLists[0]){
+	clientLists[0].socket.emit('dump',obj);
+	}
+	};
