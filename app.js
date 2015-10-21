@@ -6,6 +6,18 @@ var express = require('express')
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server);
   
+var port = process.env.PORT || 3000;
+
+
+server.listen(port, function () {
+  console.log('Server listening at port %d', port);
+});
+app.set('views', __dirname + '/views');
+app.use(express.static(path.join(__dirname, 'public')));
+// 指定webscoket的客户端的html文件
+app.get('/', function(req, res,next){
+  res.sendfile('views/chat.html');
+});
 
 //数据库连接
 //var conn = db.createConnection({
@@ -26,15 +38,11 @@ var numUsers = 0;
 var clientLists=new Array();
 //WebSocket连接监听
 io.on('connection', function (socket) {
-  //console.log(socket);
   //通知客户端已连接
   socket.emit('open');
   ++numUsers;
   socket.broadcast.emit('usernum',numUsers+'个用户');
   socket.emit('usernum',numUsers+'个用户');
-  //socket.emit('dump',sessionID);
-  // 打印握手信息
-  // console.log(socket.handshake);
 
   // 构造客户端对象
   var client = {
@@ -80,25 +88,6 @@ io.on('connection', function (socket) {
 
 });
 
-
-//express基本配置
-app.use(express.logger('dev'));
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
-app.use(express.favicon());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.errorHandler());
-
-
-// 指定webscoket的客户端的html文件
-app.get('/', function(req, res,next){
-  res.sendfile('views/chat.html');
- // res.sendfile('you viewed this page ' + req.session.views[''views/chat.html''] + ' times')
-});
-server.listen(app.get('port'), function(){
-  console.log("正在监听端口: " + app.get('port'));
-});
 
 
 var getTime=function(){
