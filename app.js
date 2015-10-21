@@ -21,8 +21,6 @@ var express = require('express')
 //});
 //conn.end();
 
-//设置日志级别
-io.set('log level', 1); 
 
 var numUsers = 0;
 var clientLists=new Array();
@@ -84,34 +82,24 @@ io.on('connection', function (socket) {
 
 
 //express基本配置
-app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
-  app.set('views', __dirname + '/views');
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
-  app.use(session(app));
-});
+app.use(express.logger('dev'));
+app.set('port', process.env.PORT || 3000);
+app.set('views', __dirname + '/views');
+app.use(express.favicon());
+app.use(app.router);
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.errorHandler());
 
-
-app.configure('development', function(){
-  app.use(express.errorHandler());
-});
 
 // 指定webscoket的客户端的html文件
 app.get('/', function(req, res,next){
   res.sendfile('views/chat.html');
  // res.sendfile('you viewed this page ' + req.session.views[''views/chat.html''] + ' times')
 });
-
-
-
 server.listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+  console.log("正在监听端口: " + app.get('port'));
 });
+
 
 var getTime=function(){
   var date = new Date();
@@ -123,8 +111,3 @@ var getColor=function(){
                 'orange','blue','blueviolet','brown','burlywood','cadetblue'];
   return colors[Math.round(Math.random() * 10000 % colors.length)];
 }
-var dump=function(obj){
-	if(clientLists[0]){
-	clientLists[0].socket.emit('dump',obj);
-	}
-	};
