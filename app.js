@@ -2,21 +2,44 @@
 var express = require('express')
   , path = require('path')
   , db= require('mysql')
+  , parseurl = require('parseurl')
+  , session = require('express-session')
   , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server);
   
 var port = process.env.PORT || 3000;
-
+var sessionid=null;
 
 server.listen(port, function () {
   console.log('Server listening at port %d', port);
 });
-app.set('views', __dirname + '/views');
+
+//添加session支持
+ app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(function(req, res, next) {
+   var views = req.session.views
+  if (!views) {
+    views = req.session.views = {}
+  }
+  // get the url pathname 
+  var pathname = parseurl(req).pathname
+  // count the views 
+  views[pathname] = (views[pathname] || 0) + 1
+  next()
+});
+ 
+//app.set('views', __dirname + '/views');
 app.use(express.static(path.join(__dirname, 'public')));
 // 指定webscoket的客户端的html文件
 app.get('/', function(req, res,next){
-  res.sendfile('views/chat.html');
+  sessionid=req.sessionID;
+  console.log(sessionid);
+  res.sendFile( __dirname + '/views/chat.html');
 });
 
 //数据库连接
@@ -39,6 +62,7 @@ var clientLists=new Array();
 //WebSocket连接监听
 io.on('connection', function (socket) {
   //通知客户端已连接
+  console.log(sessionid);
   socket.emit('open');
   ++numUsers;
   socket.broadcast.emit('usernum',numUsers+'个用户');
