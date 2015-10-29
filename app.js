@@ -7,7 +7,6 @@ var express = require('express')
   , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server);
-  
 var port = process.env.PORT || 3000;
 var sessionid=null;
 
@@ -15,11 +14,12 @@ server.listen(port, function () {
   console.log('Server listening at port %d', port);
 });
 
-//添加session支持
+/************添加session支持**************************/
  app.use(session({
   secret: 'keyboard cat',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { maxAge: 1000*3600 }
 }));
 app.use(function(req, res, next) {
    var views = req.session.views
@@ -33,11 +33,18 @@ app.use(function(req, res, next) {
   next()
 });
  
+ 
+ /************输出页面**************************/
 //app.set('views', __dirname + '/views');
 app.use(express.static(path.join(__dirname, 'public')));
 // 指定webscoket的客户端的html文件
 app.get('/', function(req, res,next){
+
+//每次刷新请求会自己生成一个新的session,如果不加下面代码并不会生成一个新的session
+req.session.regenerate(function(err) {
   sessionid=req.sessionID;
+});
+  
   console.log(sessionid);
   res.sendFile( __dirname + '/views/chat.html');
 });
@@ -71,6 +78,7 @@ io.on('connection', function (socket) {
   // 构造客户端对象
   var client = {
     socket:socket,
+	sessionid:sessionid,
     name:'',
     color:getColor()
   }
