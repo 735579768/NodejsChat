@@ -87,15 +87,15 @@ io.on('connection', function (socket) {
 
  // console.log(socket);
   //设置用户名标识
-  socket.on('setusername',function(msg){
-	   client.name=msg;
-	   console.log(msg+'已连接');
+  socket.on('setusername',function(username){
+	   client.name=username;
+	   console.log(username+'已连接');
 	   console.log('连接数:'+numUsers);
 	  //广播用户已经进来啦
 	  var obj={
 				time:getTime(),
 				color:client.color,
-				text:'欢迎进入聊天室',
+				text:'欢迎\'  '+username+'  \'进入聊天室',
 				username:client.name
 				};
 	  socket.broadcast.emit('message',obj);
@@ -119,7 +119,7 @@ io.on('connection', function (socket) {
         time:getTime(),
         color:client.color,
         username:'系统消息',
-        text:client.name+'断开连接',
+        text:client.name+' 断开连接',
       };
       // 广播用户已退出
       socket.broadcast.emit('userleft',obj);
