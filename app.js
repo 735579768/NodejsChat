@@ -72,6 +72,7 @@ io.on('connection', function (socket) {
   console.log(sessionid);
   socket.emit('open');
   ++numUsers;
+  
   socket.broadcast.emit('usernum',numUsers+'个用户');
   socket.emit('usernum',numUsers+'个用户');
 
@@ -83,12 +84,22 @@ io.on('connection', function (socket) {
     color:getColor()
   }
   clientLists.push(client);
+
  // console.log(socket);
   //设置用户名标识
   socket.on('setusername',function(msg){
 	   client.name=msg;
 	   console.log(msg+'已连接');
 	   console.log('连接数:'+numUsers);
+	  //广播用户已经进来啦
+	  var obj={
+				time:getTime(),
+				color:client.color,
+				text:'欢迎进入聊天室',
+				username:client.name
+				};
+	  socket.broadcast.emit('message',obj);
+	  socket.emit('message',obj);
 	  });
   // 对message事件的监听
   socket.on('message', function(msg){

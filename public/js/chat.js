@@ -3,7 +3,7 @@ $(function () {
 var content = $('#content');
 var status = $('#status');
 var input = $('#input');
-var myName = '游客1';
+var myName = '游客'+Math.floor(Math.random()*100);
 var socket=null;
 window.disconn=function(){
 	socket.disconnect();
