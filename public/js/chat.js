@@ -17,7 +17,7 @@ window.chatconn=function(){
 
 		//收到server的连接确认
 		socket.on('open',function(){
-			status.text('连接成功,输入消息:');
+			status.text(myName+':连接成功,输入消息:');
 			//设置用户名
 			socket.emit('setusername',myName);
 		});
