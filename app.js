@@ -110,6 +110,7 @@ io.on('connection', function (socket) {
         socket.emit('message',obj);
 		//socket.emit('system',obj);
         // 广播向其他用户发消息
+		//console.log(id);
         socket.broadcast.emit('message',obj);
     });
 
