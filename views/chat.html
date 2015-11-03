@@ -9,6 +9,9 @@
 <script src="/js/chat.js"></script>
 </head>
 <body>
+<div id="sound">
+<embed id="player" name="player" TYPE="application/x-mplayer2" src="/js/msg.wav" loop="1" autostart="1" hidden="true">
+</div>
 <h1>聊天室</h1>
 <div>
 <ul>
@@ -27,18 +30,20 @@
 <div id="numusers">0个</div>
 <div id="content" class="cl"></div>
 <SCRIPT type="text/javascript">  
-//if(-1 != navigator.userAgent.indexOf("MSIE"))  
-//{  
-//    document.write(' <OBJECT id="Player"');  
-//    document.write(' classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6"');  
-//    document.write(' width=0 height=0 > <param name="URL" value="5.wav" /> <param name="AutoStart" value="false" /> </OBJECT>');  
-//}  
-//else  
-//{  
-//    document.write(' <OBJECT id="Player"');  
-//    document.write(' type="application/x-ms-wmp"');  
-//    document.write(' autostart="false" src= "5.wav" width=0 height=0> </OBJECT>');  
-//}  
+var htmlstr='';
+if(-1 != navigator.userAgent.indexOf("MSIE"))  
+{  
+    htmlstr+=' <OBJECT id="Player"';  
+    htmlstr+=' classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6"';  
+    htmlstr+=' width=0 height=0 > <param name="URL" value="5.wav" /> <param name="AutoStart" value="false" /> </OBJECT>';  
+}  
+else  
+{  
+    htmlstr+=' <OBJECT id="Player"';  
+    htmlstr+=' type="application/x-ms-wmp"';  
+    htmlstr+=' autostart="false" src= "5.wav" width=0 height=0> </OBJECT>';  
+} 
+//document.getElementById('sound').innerHTML=htmlstr; 
 </SCRIPT>  
 <input type=button value="Play" onclick="Player.controls.play();" />  
 <input type=button value="Stop" onclick="Player.controls.stop();" />  
