@@ -5,6 +5,9 @@ var status = $('#status');
 var input = $('#input');
 var myName = '游客'+Math.floor(Math.random()*100);
 var socket=null;
+window.joinroom=function(a){
+	socket.emit('join room',a);
+	};
 window.disconn=function(){
 	socket.disconnect();
 	socket=null;
@@ -41,6 +44,9 @@ window.chatconn=function(){
 		
 		socket.on('usernum',function(num){
 			$('#numusers').html(num+'个');
+		});	
+		socket.on('debug',function(obj){
+			console.log(obj);
 		});	
 	};
 	//通过“回车”提交聊天信息

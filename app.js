@@ -68,6 +68,8 @@ var numUsers = 0;
 var clientLists=new Array();
 //WebSocket连接监听
 io.on('connection', function (socket) {
+  //添加入聊天室
+  
   //通知客户端已连接
   console.log(sessionid);
   socket.emit('open');
@@ -85,7 +87,17 @@ io.on('connection', function (socket) {
   }
   clientLists.push(client);
 
- // console.log(socket);
+ //加入房间;
+   socket.on('join room',function(roomid){
+   	socket.join(roomid);
+	//socket.leave(roomid);
+    var obj = {time:getTime(),color:client.color};
+        obj['text']=client.name+'进入'+roomid+'号房间';
+        obj['username']=client.name;  
+		
+		//对当前房间进行回复
+		socket.to(roomid).emit('message',obj);
+   });
   //设置用户名标识
   socket.on('setusername',function(username){
 	   client.name=username;
@@ -105,12 +117,12 @@ io.on('connection', function (socket) {
   socket.on('message', function(msg){
     var obj = {time:getTime(),color:client.color};
         obj['text']=msg;
-        obj['username']=client.name;      
+        obj['username']=client.name;   
         // 向当前用户返回消息（可以省略）
         socket.emit('message',obj);
 		//socket.emit('system',obj);
         // 广播向其他用户发消息
-		//console.log(id);
+		//console.log(this);
         socket.broadcast.emit('message',obj);
     });
 
