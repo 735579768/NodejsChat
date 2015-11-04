@@ -99,9 +99,10 @@ io.on('connection', function (socket) {
 		var roomname=socket.rooms[a];
 		(roomname==roomid)?jsjoin=false:socket.leave(roomname);	
 		}
+		var obj;
 	if(isjoin){
 		socket.join(roomid);
-		var obj = {time:getTime(),color:client.color};
+		    obj = {time:getTime(),color:client.color};
 			obj['text']=client.name+'进入'+roomid+'号房间';
 			obj['username']=client.name;  
 			//对当前房间进行回复
@@ -143,6 +144,8 @@ debug(io.sockets.connected);
 
 //根据socket.id取当前实例
 debug(io.sockets.connected[socket.id]);
+//obj['text']='for your eyes only';
+//io.sockets.connected[socket.id].emit('message',obj );
 
    });
    
