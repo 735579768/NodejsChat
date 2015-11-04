@@ -154,3 +154,4 @@ height:300px; overflow:auto;
     padding:5px; 
     width:380px;  
 }
+.room li{ float:left; padding:0px 10px; height:30px; line-height:30px;}

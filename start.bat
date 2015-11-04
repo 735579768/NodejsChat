@@ -1,3 +1,3 @@
 cd /d %~d0
-node app.js
+supervisor app.js
 pause

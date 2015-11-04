@@ -2,6 +2,7 @@
 var express = require('express')
   , path = require('path')
   , db= require('mysql')
+ // , rooms= require('./rooms.js')
   , parseurl = require('parseurl')
   , session = require('express-session')
   , app = express()
@@ -32,8 +33,7 @@ app.use(function(req, res, next) {
   views[pathname] = (views[pathname] || 0) + 1
   next()
 });
- 
- 
+
  /************输出页面**************************/
 //app.set('views', __dirname + '/views');
 app.use(express.static(path.join(__dirname, 'public')));
@@ -63,15 +63,19 @@ req.session.regenerate(function(err) {
 //});
 //conn.end();
 
-
 var numUsers = 0;
 var clientLists=new Array();
 //WebSocket连接监听
 io.on('connection', function (socket) {
+  //默认进入同一个房间
+  socket.leave(socket.id);
+  socket.join('default');
   //添加入聊天室
-  
+  debug('socket.id:'+socket.id);
+  debug('socket.rooms:'+socket.rooms);
+  debug('socket.sessionid:'+sessionid);
   //通知客户端已连接
-  console.log(sessionid);
+  
   socket.emit('open');
   ++numUsers;
   
@@ -84,19 +88,44 @@ io.on('connection', function (socket) {
 	sessionid:sessionid,
     name:'',
     color:getColor()
-  }
+  } 
   clientLists.push(client);
 
  //加入房间;
    socket.on('join room',function(roomid){
-   	socket.join(roomid);
-	//socket.leave(roomid);
-    var obj = {time:getTime(),color:client.color};
-        obj['text']=client.name+'进入'+roomid+'号房间';
-        obj['username']=client.name;  
-		
-		//对当前房间进行回复
-		socket.to(roomid).emit('message',obj);
+	//保证自己只在一个房间
+	var isjoin=true;
+	for(var a in socket.rooms){
+		var roomname=socket.rooms[a];
+		(roomname==roomid)?jsjoin=false:socket.leave(roomname);	
+		}
+	if(isjoin){
+		socket.join(roomid);
+		var obj = {time:getTime(),color:client.color};
+			obj['text']=client.name+'进入'+roomid+'号房间';
+			obj['username']=client.name;  
+			//对当前房间进行回复
+			io.sockets.in(roomid).emit('message',obj);
+			//socket.broadcast.to(roomid).emit('message',obj)
+			//socket.to(roomid).emit('message',obj);
+	}
+//console.log(room);
+//console.log(socket);
+//		var rn=rooms.add(roomid,socket);
+//		debug(rooms);
+//		debug('房间总数：'+rooms.room_lists.length);
+//		debug('当前房间'+roomid+'人数：'+rn.sockets);
+			//对当前房间进行回复
+			io.sockets.in(roomid).emit('message',obj);	
+		//debug('socket.rooms:'+socket.rooms);
+//获取所有房间的信息
+//key为房间名，value为房间名对应的socket ID数组
+//var roomlist=io.sockets.manager.rooms;
+//获取particular room中的客户端，返回所有在此房间的socket实例
+//var so=io.sockets.clients('particular room');
+//通过socket.id来获取此socket进入的房间信息
+//var rm=io.sockets.manager.roomClients[socket.id];
+//debug(roomlist);
    });
   //设置用户名标识
   socket.on('setusername',function(username){
@@ -142,10 +171,17 @@ io.on('connection', function (socket) {
       console.log(obj.text);
     });
 
+	socket.on('error', function (err) { 
+	
+		console.error(err.stack); // TODO, cleanup 
+	});
+
 });
 
-
-
+ 
+var debug=function(obj){
+	console.log(obj);
+	};
 var getTime=function(){
   var date = new Date();
   return date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
