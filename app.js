@@ -109,24 +109,43 @@ io.on('connection', function (socket) {
 			//socket.broadcast.to(roomid).emit('message',obj)
 			//socket.to(roomid).emit('message',obj);
 	}
-//console.log(room);
-//console.log(socket);
-//		var rn=rooms.add(roomid,socket);
-//		debug(rooms);
-//		debug('房间总数：'+rooms.room_lists.length);
-//		debug('当前房间'+roomid+'人数：'+rn.sockets);
+
 			//对当前房间进行回复
 			io.sockets.in(roomid).emit('message',obj);	
-		//debug('socket.rooms:'+socket.rooms);
-//获取所有房间的信息
-//key为房间名，value为房间名对应的socket ID数组
-//var roomlist=io.sockets.manager.rooms;
-//获取particular room中的客户端，返回所有在此房间的socket实例
-//var so=io.sockets.clients('particular room');
-//通过socket.id来获取此socket进入的房间信息
-//var rm=io.sockets.manager.roomClients[socket.id];
-//debug(roomlist);
+
+
+/**获取所有房间的信息
+  *key为房间名，value为房间名对应的socket ID数
+  *返回格式
+  *rooms:
+  *{ 'roomname': { '7YFXQPuOZFPkpCckAAAB': true },
+  *  roomname: { '1iIPIVIxaqHumNNEAAAA': true } }, 
+  */ 
+debug(io.sockets.adapter.rooms);
+
+/**获取指定房间中的客户端，返回所有在此房间的socket.id
+  *返回格式
+  *{ '7YFXQPuOZFPkpCckAAAB': true,'7YFXQPuOZFPkpCckAAAB': true }
+  */
+debug(io.sockets.adapter.rooms[roomid]);
+
+/**
+  *取当前所有socket的id
+  *格式：
+  * sids:
+  *{ '1iIPIVIxaqHumNNEAAAA': { roomname: true }
+  * '7YFXQPuOZFPkpCckAAAB': { roomname: true } },
+  */
+debug(io.sockets.adapter.sids);
+
+//取当前已经连接的socket实例数组[[object],[object]]
+debug(io.sockets.connected);
+
+//根据socket.id取当前实例
+debug(io.sockets.connected[socket.id]);
+
    });
+   
   //设置用户名标识
   socket.on('setusername',function(username){
 	   client.name=username;
@@ -180,7 +199,9 @@ io.on('connection', function (socket) {
 
  
 var debug=function(obj){
+	console.log("--------------------------------------------------------------")
 	console.log(obj);
+	 //io.sockets.emit('debug',obj);
 	};
 var getTime=function(){
   var date = new Date();
