@@ -6,7 +6,8 @@ global.debug=function(obj){
 	};
 global.getMessage=function(client,msg){
     var obj = {
-		sid:client.socket.id,
+		client:client,
+		sid:client.socketid,
 		time:getTime(),
 		color:client.color,
 		text:msg,

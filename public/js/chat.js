@@ -3,6 +3,7 @@ $(function () {
 var chat_content = $('#chat_content');
 var status = $('#status');
 var input = $('#input');
+var jihuorooms=$('#jihuorooms');
 var myName = '游客'+Math.floor(Math.random()*100);
 var socket=null;
 window.scrollbot=function(){
@@ -68,8 +69,21 @@ window.chatconn=function(){
 		});	
 		
 		socket.on('usernum',function(num){
-			$('#numusers').html(num+'个');
+			$('#numusers').html(num);
 		});	
+		socket.on('jihuorooms',function(obj){
+			console.log(obj);
+			var str='';
+			for(var a in obj){
+				str+='<li><a href="javascript:;" onclick="joinroom(\''+a+'\');">'+a+'</a></li>';
+				}
+			jihuorooms.html(str);
+			
+		});	
+		socket.on('join room',function(msg){
+			$('#roomid').html(msg.room);
+			});
+		
 		socket.on('debug',function(obj){
 			console.log(obj);
 		});	

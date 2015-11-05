@@ -23,7 +23,7 @@ body{font:14px/1.7 microsoft yahei,Cambria,"Hoefler Text","Liberation Serif",Tim
 .cl:after{content:"";visibility:hidden;display:block;font-size:0;content:'';clear:both;height:0;}
 * html .cl{zoom:1;}
 .bg{position:fixed;_position:absolute;z-index:999;top:0px;left:0px;width:100%;_width:expression(document.documentElement.scrollWidth);height:100%;_height:expression(document.documentElement.scrollHeight);background:rgb(0,0,0);background:url(../images/loading.gif) center center no-repeat rgba(0,0,0,0.1);filter:alpha(opacity=0.1);}
-a{color:#666;transition:all .3s;-webkit-transition:all .3s;-moz-transition:all .3s;-o-transition:all .3s;text-decoration:none;}
+a{color:#666;transition:all .3s;-webkit-transition:all .3s;-moz-transition:all .3s;-o-transition:all .3s;text-decoration:none; display:inline-block;}
 a:hover{color:#000;}
 .center{text-align:center;}
 .red{color:#f00;}

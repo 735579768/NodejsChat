@@ -9,29 +9,32 @@ var sockets={
 		var clientLists=new Array();
 		//WebSocket连接监听
 		io.on('connection', function (socket) {
+		  // 构造客户端对象
+		  var client = {
+			sessionid:sessionid,
+			socketid:socket.id,
+			name:'',
+			roomdescr:'公共聊天大厅',
+			room:'聊天大厅',
+			color:getColor()
+		  } 
 		  //默认进入同一个房间
 		  socket.leave(socket.id);
-		  socket.join('default');
+		  socket.join('聊天大厅');
+		  //发送激活状态的聊天室
+		  io.sockets.emit('jihuorooms',io.sockets.adapter.rooms);
 		  //添加入聊天室
 		  debug('socket.id:'+socket.id);
 		  debug('socket.rooms:'+socket.rooms);
 		  debug('socket.sessionid:'+sessionid);
 		  //通知客户端已连接
-		  
 		  socket.emit('open');
 		  ++numUsers;
 		  
 		  socket.broadcast.emit('usernum',numUsers+'个用户');
 		  socket.emit('usernum',numUsers+'个用户');
-		
-		  // 构造客户端对象
-		  var client = {
-			socket:socket,
-			sessionid:sessionid,
-			name:'',
-			color:getColor()
-		  } 
 		  clientLists.push(client);
+		  socket.emit('join room',client);
 		
 		 //加入房间;
 		   socket.on('join room',function(roomid){
@@ -53,6 +56,10 @@ var sockets={
 			}else{
 				socket.emit('message',getMessage(client,'您已经在房间内!'));
 				}
+			client.room=roomid;
+			socket.emit('join room',client);
+			//发送激活状态的聊天室
+			io.sockets.emit('jihuorooms',io.sockets.adapter.rooms);
 		   });
 		   
 		  //设置用户名标识

@@ -39,6 +39,9 @@ app.use(function(req, res, next) {
 //app.set('views', __dirname + '/views');
 app.use(express.static(path.join(__dirname, 'public')));
 // 指定webscoket的客户端的html文件
+app.get('/room/:id?', function(req, res,next){
+  res.send(req.params.id);
+});
 app.get('/', function(req, res,next){
 
 //每次刷新请求会自己生成一个新的session,如果不加下面代码并不会生成一个新的session
@@ -50,6 +53,8 @@ app.get('/', function(req, res,next){
   console.log(sessionid);
   res.sendFile( __dirname + '/views/chat.html');
 });
+
+
 
 //数据库连接
 //var conn = db.createConnection({

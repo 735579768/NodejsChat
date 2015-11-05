@@ -30,3 +30,6 @@ p {line-height:18px;padding:2px;}
 .message-r .message-text{ padding-right:20px;}
 .message-l .message-time,
 .message-r .message-time{ }
+#jihuorooms li{ display:inline-block;margin-right: 10px;}
+#jihuorooms li a{    border: solid 1px #ededed; height:30px; width:60px; line-height:30px; text-align:center;}
+#jihuorooms li a:hover{ background:#ededed;}
