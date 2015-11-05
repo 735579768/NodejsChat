@@ -176,5 +176,5 @@ var getTime=function(){
 }
 
 var getColor=function(){
-  return '#000;';
+  return '#666;';
 }
