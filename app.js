@@ -60,7 +60,7 @@ app.get('/', function(req, res,next){
 });
 
 app.all('*', function(req,res){
-res.render('404');
+res.render('chat',{ title: 'Hey', message: 'Hello there!'});
 });
 
 
