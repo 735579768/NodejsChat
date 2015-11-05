@@ -44,7 +44,7 @@ window.chatconn=function(){
 			chat_content.append(str);
 		});
 		
-	   socket.on('userleft',function(json){
+	    socket.on('userleft',function(json){
 			str='<div class="chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span></div><div class="message-text"> [MESSAGE]</div> </div>';	
 			str=str.replace('[COLOR]','#f00');
 			str=str.replace('[TIME]',json.time);
@@ -83,7 +83,6 @@ window.chatconn=function(){
 		socket.on('join room',function(msg){
 			$('#roomid').html(msg.room);
 			});
-		
 		socket.on('debug',function(obj){
 			console.log(obj);
 		});	
