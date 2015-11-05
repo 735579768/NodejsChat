@@ -34,7 +34,7 @@ window.chatconn=function(){
 		//监听system事件，判断welcome或者disconnect，打印系统消息信息
 		socket.on('system',function(json){
 			var str = '';
-			if(myName==json.text) status.text(myName + ': ').css('color', json.color);
+			//if(myName==json.text) status.text(myName + ': ').css('color', json.color);
 			//str = '<p style="color:'+json.color+'"> @ '+ json.time+ ' : 欢迎 ' + json.text +'</p>';
 			str='<div class="chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span></div><div class="message-text"> [MESSAGE]</div> </div>';	
 			str=str.replace('[COLOR]','#f00');

@@ -37,7 +37,7 @@ var sockets={
 		  socket.emit('join room',client);
 		
 		 //加入房间;
-		   socket.on('join room',function(roomid){
+		  socket.on('join room',function(roomid){
 			//保证自己只在一个房间
 			var isjoin=true;
 			for(var a in socket.rooms){
@@ -65,10 +65,10 @@ var sockets={
 		  //设置用户名标识
 		  socket.on('setusername',function(username){
 			   client.name=username;
-			   console.log(username+'已连接');
-			   console.log('连接数:'+numUsers);
+//			   console.log(username+'已连接');
+//			   console.log('连接数:'+numUsers);
 			  
-			  io.sockets.emit('message',getMessage(client,'欢迎\'  '+username+'  \'进入聊天室'));
+			  io.sockets.emit('system',getMessage(client,'欢迎\'  '+username+'  \'进入聊天室'));
 			  //广播用户已经进来啦
 			  //socket.broadcast.emit('message',getMessage(client,'欢迎\'  '+username+'  \'进入聊天室'));
 			  //socket.emit('message',obj);
@@ -81,12 +81,12 @@ var sockets={
 				}
 			});
 			//监听出退事件
-			socket.on('disconnect', function () {  
+		  socket.on('disconnect', function () {  
 			  var obj = {
 				time:getTime(),
 				color:client.color,
 				username:'系统消息',
-				text:client.name+' 断开连接',
+				text:client.name+' 已经退出',
 			  };
 			  // 广播用户已退出
 			  socket.broadcast.emit('userleft',obj);
@@ -96,7 +96,7 @@ var sockets={
 			  console.log(obj.text);
 			});
 		
-			socket.on('error', function (err) { 	
+		  socket.on('error', function (err) { 	
 				console.error(err.stack); // TODO, cleanup 
 			});
 		

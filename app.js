@@ -36,7 +36,12 @@ app.use(function(req, res, next) {
 });
 
 /************输出页面**************************/
-//app.set('views', __dirname + '/views');
+app.set('views','./views');
+//app.set('view engine', 'ejs');
+//开发时改变后缀
+app.engine('.html', require('ejs').__express);
+app.set('view engine', 'html');
+
 app.use(express.static(path.join(__dirname, 'public')));
 // 指定webscoket的客户端的html文件
 app.get('/room/:id?', function(req, res,next){
@@ -51,7 +56,11 @@ app.get('/', function(req, res,next){
   
   sessionid=req.sessionID;
   console.log(sessionid);
-  res.sendFile( __dirname + '/views/chat.html');
+  res.render('chat',{ title: 'Hey', message: 'Hello there!'});
+});
+
+app.all('*', function(req,res){
+res.render('404');
 });
 
 
