@@ -3,15 +3,14 @@
 <head>
 <meta charset="utf-8">
 <title>简单聊天室</title>
-<link rel="stylesheet" type="text/css" href="css/main.css">
+<link rel="stylesheet" type="text/css" href="css/reset.css" />
+<link rel="stylesheet" type="text/css" href="css/index.css" />
 <script src="js/jquery-1.9.1.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/chat.js"></script>
 </head>
 <body>
-<div id="sound">
-<embed id="player" name="player" TYPE="application/x-mplayer2" src="/js/msg.wav" loop="1" autostart="1" hidden="true">
-</div>
+<div class="container">
 <h1>聊天室</h1>
 <div>
 <ul class="room">
@@ -28,7 +27,8 @@
 </div>
 </div>
 <div id="numusers">0个</div>
-<div id="content" class="cl"></div>
+<div id="chat_content" class="cl"></div>
+</div>
 <SCRIPT type="text/javascript">  
 var htmlstr='';
 if(-1 != navigator.userAgent.indexOf("MSIE"))  
@@ -45,7 +45,5 @@ else
 } 
 //document.getElementById('sound').innerHTML=htmlstr; 
 </SCRIPT>  
-<input type=button value="Play" onclick="Player.controls.play();" />  
-<input type=button value="Stop" onclick="Player.controls.stop();" />  
 </body>
 </html>

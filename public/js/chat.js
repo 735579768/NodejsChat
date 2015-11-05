@@ -1,10 +1,15 @@
 
 $(function () {
-var content = $('#content');
+var chat_content = $('#chat_content');
 var status = $('#status');
 var input = $('#input');
 var myName = '游客'+Math.floor(Math.random()*100);
 var socket=null;
+window.scrollbot=function(){
+	var sh=chat_content[0].scrollHeight;
+	var h=chat_content.height();
+	chat_content.scrollTop(sh-h);
+	};
 window.joinroom=function(a){
 	socket.emit('join room',a);
 	};
@@ -27,19 +32,39 @@ window.chatconn=function(){
 	
 		//监听system事件，判断welcome或者disconnect，打印系统消息信息
 		socket.on('system',function(json){
-			var p = '';
+			var str = '';
 			if(myName==json.text) status.text(myName + ': ').css('color', json.color);
-			p = '<p style="color:'+json.color+'">系统消息 @ '+ json.time+ ' : 欢迎 ' + json.text +'</p>';
-			content.prepend(p);
+			//str = '<p style="color:'+json.color+'"> @ '+ json.time+ ' : 欢迎 ' + json.text +'</p>';
+			str='<div class="chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span></div><div class="message-text"> [MESSAGE]</div> </div>';	
+			str=str.replace('[COLOR]','#f00');
+			str=str.replace('[TIME]',json.time);
+			str=str.replace('[MESSAGE]',json.text);
+			str=str.replace('[USERNAME]','系统消息');
+			chat_content.append(str);
 		});
+		
 	   socket.on('userleft',function(json){
-		p = '<p style="color:'+json.color+'">系统消息 @ '+ json.time+ ' : 拜拜 ' + json.text +'</p>';
-		content.prepend(p);
+			str='<div class="chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span></div><div class="message-text"> [MESSAGE]</div> </div>';	
+			str=str.replace('[COLOR]','#f00');
+			str=str.replace('[TIME]',json.time);
+			str=str.replace('[MESSAGE]',json.text);
+			str=str.replace('[USERNAME]','系统消息');
+			chat_content.append(str);
 		});
 		//监听message事件，打印消息信息
 		socket.on('message',function(json){
-			var p = '<p><span style="color:'+json.color+';">' + json.username+'</span> @ '+ json.time+ ' : '+json.text+'</p>';
-			content.prepend(p);
+			var str='';
+			if(json.sid!=socket.id){
+			str = '<div class="chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span></div><div class="message-text"> [MESSAGE]</div> </div>';				
+			}else{
+			str = '<div class="chat-message message-r"><div class="nickname" style="color:[COLOR];"><span class="message-time">[TIME]</span>@: [USERNAME]</div><div class="message-text"> [MESSAGE]</div> </div>';			
+					}
+			str=str.replace('[COLOR]',json.color);
+			str=str.replace('[TIME]',json.time);
+			str=str.replace('[MESSAGE]',json.text);
+			str=str.replace('[USERNAME]',json.username);
+			chat_content.append(str);
+			scrollbot();
 		});	
 		
 		socket.on('usernum',function(num){
@@ -62,4 +87,5 @@ window.chatconn=function(){
 			$(this).val('');
 		}
 	});
+chatconn();
 });

@@ -41,10 +41,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function(req, res,next){
 
 //每次刷新请求会自己生成一个新的session,如果不加下面代码并不会生成一个新的session
-req.session.regenerate(function(err) {
-  sessionid=req.sessionID;
-});
+//req.session.regenerate(function(err) {
+//  
+//});
   
+  sessionid=req.sessionID;
   console.log(sessionid);
   res.sendFile( __dirname + '/views/chat.html');
 });
@@ -97,56 +98,20 @@ io.on('connection', function (socket) {
 	var isjoin=true;
 	for(var a in socket.rooms){
 		var roomname=socket.rooms[a];
-		(roomname==roomid)?jsjoin=false:socket.leave(roomname);	
+		if(roomname==roomid){
+			isjoin=false;
+			}else{
+			 io.sockets.to(roomname).emit('message',getMessage(client,'离开房间'));
+			socket.leave(roomname);
+			}	
 		}
-		var obj;
 	if(isjoin){
 		socket.join(roomid);
-		    obj = {time:getTime(),color:client.color};
-			obj['text']=client.name+'进入'+roomid+'号房间';
-			obj['username']=client.name;  
-			//对当前房间进行回复
-			io.sockets.in(roomid).emit('message',obj);
-			//socket.broadcast.to(roomid).emit('message',obj)
-			//socket.to(roomid).emit('message',obj);
-	}
-
-			//对当前房间进行回复
-			io.sockets.in(roomid).emit('message',obj);	
-
-
-/**获取所有房间的信息
-  *key为房间名，value为房间名对应的socket ID数
-  *返回格式
-  *rooms:
-  *{ 'roomname': { '7YFXQPuOZFPkpCckAAAB': true },
-  *  roomname: { '1iIPIVIxaqHumNNEAAAA': true } }, 
-  */ 
-debug(io.sockets.adapter.rooms);
-
-/**获取指定房间中的客户端，返回所有在此房间的socket.id
-  *返回格式
-  *{ '7YFXQPuOZFPkpCckAAAB': true,'7YFXQPuOZFPkpCckAAAB': true }
-  */
-debug(io.sockets.adapter.rooms[roomid]);
-
-/**
-  *取当前所有socket的id
-  *格式：
-  * sids:
-  *{ '1iIPIVIxaqHumNNEAAAA': { roomname: true }
-  * '7YFXQPuOZFPkpCckAAAB': { roomname: true } },
-  */
-debug(io.sockets.adapter.sids);
-
-//取当前已经连接的socket实例数组[[object],[object]]
-debug(io.sockets.connected);
-
-//根据socket.id取当前实例
-debug(io.sockets.connected[socket.id]);
-//obj['text']='for your eyes only';
-//io.sockets.connected[socket.id].emit('message',obj );
-
+		//对当前房间进行回复
+		io.sockets.in(roomid).emit('message',getMessage(client,client.name+'进入'+roomid+'号房间'));
+	}else{
+		socket.emit('message',getMessage(client,'您已经在房间内!'));
+		}
    });
    
   //设置用户名标识
@@ -154,29 +119,19 @@ debug(io.sockets.connected[socket.id]);
 	   client.name=username;
 	   console.log(username+'已连接');
 	   console.log('连接数:'+numUsers);
+	  
+	  io.sockets.emit('message',getMessage(client,'欢迎\'  '+username+'  \'进入聊天室'));
 	  //广播用户已经进来啦
-	  var obj={
-				time:getTime(),
-				color:client.color,
-				text:'欢迎\'  '+username+'  \'进入聊天室',
-				username:client.name
-				};
-	  socket.broadcast.emit('message',obj);
-	  socket.emit('message',obj);
+	  //socket.broadcast.emit('message',getMessage(client,'欢迎\'  '+username+'  \'进入聊天室'));
+	  //socket.emit('message',obj);
 	  });
   // 对message事件的监听
   socket.on('message', function(msg){
-    var obj = {time:getTime(),color:client.color};
-        obj['text']=msg;
-        obj['username']=client.name;   
-        // 向当前用户返回消息（可以省略）
-        socket.emit('message',obj);
-		//socket.emit('system',obj);
-        // 广播向其他用户发消息
-		//console.log(this);
-        socket.broadcast.emit('message',obj);
+		//取当前实例所在房间
+		for(var a in socket.rooms){
+		 io.sockets.to(socket.rooms[a]).emit('message',getMessage(client,msg));
+		}
     });
-
     //监听出退事件
     socket.on('disconnect', function () {  
       var obj = {
@@ -193,8 +148,7 @@ debug(io.sockets.connected[socket.id]);
       console.log(obj.text);
     });
 
-	socket.on('error', function (err) { 
-	
+	socket.on('error', function (err) { 	
 		console.error(err.stack); // TODO, cleanup 
 	});
 
@@ -206,13 +160,21 @@ var debug=function(obj){
 	console.log(obj);
 	 //io.sockets.emit('debug',obj);
 	};
+var getMessage=function(client,msg){
+    var obj = {
+		sid:client.socket.id,
+		time:getTime(),
+		color:client.color,
+		text:msg,
+		username:client.name
+		};
+		return obj;	
+	};
 var getTime=function(){
   var date = new Date();
   return date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 }
 
 var getColor=function(){
-  var colors = ['aliceblue','antiquewhite','aqua','aquamarine','pink','red','green',
-                'orange','blue','blueviolet','brown','burlywood','cadetblue'];
-  return colors[Math.round(Math.random() * 10000 % colors.length)];
+  return '#000;';
 }
