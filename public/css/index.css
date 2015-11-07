@@ -22,3 +22,4 @@ p{line-height:18px;padding:2px;}
 #friendlist li a{ display:block;    padding-left: 10px;
     border-bottom: solid 1px #ededed;}
 	.friendtitle{ font-size:14px; font-weight:bolder; display:block; text-align:center;    border-bottom: solid 2px #ededed; margin-bottom:10px;}
+	.sendmessage{ margin-left:160px;}
