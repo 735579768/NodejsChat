@@ -4,15 +4,17 @@ var chat_content = $('#chat_content');
 var status = $('#status');
 var input = $('#input');
 var jihuorooms=$('#jihuorooms');
-var myName = '游客'+Math.floor(Math.random()*100);
+var myName = myinfo.myname;
 var socket=null;
 window.scrollbot=function(){
 	var sh=chat_content[0].scrollHeight;
 	var h=chat_content.height();
 	chat_content.scrollTop(sh-h);
 	};
-window.joinroom=function(a){
-	socket.emit('join room',a);
+window.joinroom=function(a,b){
+	myinfo.roomid=a;
+	myinfo.roomtitle=b;
+	socket.emit('join room',myinfo);
 	};
 window.disconn=function(){
 	socket.disconnect();
@@ -27,8 +29,8 @@ window.chatconn=function(){
 		//收到server的连接确认
 		socket.on('open',function(){
 			status.text(myName+':连接成功,输入消息:');
-			//设置用户名
-			socket.emit('setusername',myName);
+			//进入聊天室
+			socket.emit('join room',myinfo);
 		});
 	
 		//监听system事件，判断welcome或者disconnect，打印系统消息信息
@@ -68,10 +70,20 @@ window.chatconn=function(){
 			scrollbot();
 		});	
 		
-		socket.on('usernum',function(num){
-			$('#numusers').html(num);
+		socket.on('usernums',function(msg){
+			$('#numusers').html(msg);
 		});	
-		socket.on('jihuorooms',function(obj){
+		socket.on('totalusernums',function(num){
+			$('#totalnumusers').html(num);
+		});	
+		socket.on('username lists',function(obj){
+			var str='';
+			for(var a in obj){
+				str+='<li><a href="javascript:;">'+obj[a]+'</a></li>';
+				}
+			$('#friendlist').html(str);
+		});	
+		socket.on('room number',function(obj){
 			console.log(obj);
 			var str='';
 			for(var a in obj){
@@ -80,8 +92,8 @@ window.chatconn=function(){
 			jihuorooms.html(str);
 			
 		});	
-		socket.on('join room',function(msg){
-			$('#roomid').html(msg.room);
+		socket.on('set roomtitle',function(msg){
+			$('#roomtitle').html(myinfo.roomid+'：'+myinfo.roomtitle);
 			});
 		socket.on('debug',function(obj){
 			console.log(obj);

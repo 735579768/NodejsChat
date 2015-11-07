@@ -14,30 +14,29 @@ var sockets={
 			sessionid:sessionid,
 			socketid:socket.id,
 			name:'',
-			roomdescr:'公共聊天大厅',
-			room:'聊天大厅',
+			roomtitle:'公共聊天大厅',
+			roomid:'聊天大厅',
 			color:getColor()
 		  } 
+		  socket.emit('open');
+		  ++numUsers;
 		  //默认进入同一个房间
 		  socket.leave(socket.id);
 		  socket.join('聊天大厅');
 		  //发送激活状态的聊天室
 		  io.sockets.emit('jihuorooms',io.sockets.adapter.rooms);
-		  //添加入聊天室
-		  debug('socket.id:'+socket.id);
-		  debug('socket.rooms:'+socket.rooms);
-		  debug('socket.sessionid:'+sessionid);
-		  //通知客户端已连接
-		  socket.emit('open');
-		  ++numUsers;
-		  
-		  socket.broadcast.emit('usernum',numUsers+'个用户');
-		  socket.emit('usernum',numUsers+'个用户');
+		  io.sockets.emit('totalusernums','总共'+numUsers+'个用户');
 		  clientLists.push(client);
 		  socket.emit('join room',client);
 		
 		 //加入房间;
-		  socket.on('join room',function(roomid){
+		  socket.on('join room',function(myinfo){
+			socket.username=myinfo.myname;
+			client.name=myinfo.myname;
+			client.roomid=myinfo.roomid;
+			client.roomtitle=myinfo.roomtitle;
+			var roomid=myinfo.roomid;
+			io.sockets.emit('system',getMessage(client,'欢迎\'  '+client.name+'  \'进入聊天室'));
 			//保证自己只在一个房间
 			var isjoin=true;
 			for(var a in socket.rooms){
@@ -45,8 +44,22 @@ var sockets={
 				if(roomname==roomid){
 					isjoin=false;
 					}else{
-					 io.sockets.to(roomname).emit('message',getMessage(client,'离开房间'));
 					socket.leave(roomname);
+					io.sockets.to(roomname).emit('message',getMessage(client,'离开房间'));
+					//更新离开房间的人数
+					var romnum=0;
+					for(var a in io.sockets.adapter.rooms[roomname]){
+						romnum++;
+						}
+					io.sockets.to(roomname).emit('usernums','当前房间'+romnum+'个用户');
+					//查询用户名列表
+					var userlist=[];
+					for(var a in io.sockets.adapter.rooms[roomname]){
+						var o=io.sockets.connected[a];
+						userlist.push(o.username);
+						}
+					io.sockets.to(roomname).emit('username lists',userlist);
+					
 					}	
 				}
 			if(isjoin){
@@ -56,23 +69,25 @@ var sockets={
 			}else{
 				socket.emit('message',getMessage(client,'您已经在房间内!'));
 				}
+			//更新加入房间的人数
+			var romnum=0;
+			for(var a in io.sockets.adapter.rooms[roomid]){
+				romnum++;
+				}
+			//查询用户名列表
+			var userlist=[];
+			for(var a in io.sockets.adapter.rooms[roomid]){
+				var o=io.sockets.connected[a];
+				userlist.push(o.username);
+			}
+			io.sockets.to(roomid).emit('username lists',userlist);
+			io.sockets.to(roomid).emit('usernums','当前房间'+romnum+'个用户');
 			client.room=roomid;
-			socket.emit('join room',client);
+			socket.emit('set roomtitle',client);
 			//发送激活状态的聊天室
-			io.sockets.emit('jihuorooms',io.sockets.adapter.rooms);
+			io.sockets.emit('room number',io.sockets.adapter.rooms);
 		   });
 		   
-		  //设置用户名标识
-		  socket.on('setusername',function(username){
-			   client.name=username;
-//			   console.log(username+'已连接');
-//			   console.log('连接数:'+numUsers);
-			  
-			  io.sockets.emit('system',getMessage(client,'欢迎\'  '+username+'  \'进入聊天室'));
-			  //广播用户已经进来啦
-			  //socket.broadcast.emit('message',getMessage(client,'欢迎\'  '+username+'  \'进入聊天室'));
-			  //socket.emit('message',obj);
-			  });
 		  // 对message事件的监听
 		  socket.on('message', function(msg){
 				//取当前实例所在房间
@@ -92,7 +107,7 @@ var sockets={
 			  socket.broadcast.emit('userleft',obj);
 			  //广播用户数量
 			  --numUsers;
-			  socket.broadcast.emit('usernum',numUsers+'个用户');
+			  io.sockets.emit('totalusernums','总共'+numUsers+'个用户');
 			  console.log(obj.text);
 			});
 		
