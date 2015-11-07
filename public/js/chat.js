@@ -81,7 +81,7 @@ window.chatconn=function(){
 		socket.on('username lists',function(obj){
 			var str='';
 			for(var a in obj){
-				str+='<li><a href="javascript:;">'+obj[a]+'</a></li>';
+				str+='<li><a href="javascript:;">'+obj[a]+'<span class="fr pdr10">在线</span></a></li>';
 				}
 			$('#friendlist').html(str);
 		});	
