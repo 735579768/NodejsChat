@@ -39,22 +39,23 @@ window.chatconn=function(){
 			var str = '';
 			//if(myName==json.text) status.text(myName + ': ').css('color', json.color);
 			//str = '<p style="color:'+json.color+'"> @ '+ json.time+ ' : 欢迎 ' + json.text +'</p>';
-			str='<div class="chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span></div><div class="message-text"> [MESSAGE]</div> </div>';	
+			str='<div class="sysmsg chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span><div class="message-text" style="display:inline-block;"> [MESSAGE]</div> </div></div>';	
 			str=str.replace('[COLOR]','#f00');
 			str=str.replace('[TIME]',json.time);
 			str=str.replace('[MESSAGE]',json.text);
 			str=str.replace('[USERNAME]','系统消息');
 			chat_content.append(str);
+			scrollbot();
 		});
 		
-	    socket.on('userleft',function(json){
-			str='<div class="chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span></div><div class="message-text"> [MESSAGE]</div> </div>';	
-			str=str.replace('[COLOR]','#f00');
-			str=str.replace('[TIME]',json.time);
-			str=str.replace('[MESSAGE]',json.text);
-			str=str.replace('[USERNAME]','系统消息');
-			chat_content.append(str);
-		});
+//	    socket.on('userleft',function(json){
+//			str='<div class="chat-message message-l"><div class="nickname" style="color:[COLOR];">[USERNAME]:@ <span class="message-time">[TIME]</span></div><div class="message-text"> [MESSAGE]</div> </div>';	
+//			str=str.replace('[COLOR]','#f00');
+//			str=str.replace('[TIME]',json.time);
+//			str=str.replace('[MESSAGE]',json.text);
+//			str=str.replace('[USERNAME]','系统消息');
+//			chat_content.append(str);
+//		});
 		//监听message事件，打印消息信息
 		socket.on('message',function(json){
 			var str='';

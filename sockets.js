@@ -37,7 +37,7 @@ var sockets={
 			client.roomid=myinfo.roomid;
 			client.roomtitle=myinfo.roomtitle;
 			var roomid=myinfo.roomid;
-			io.sockets.emit('system',getMessage(client,'欢迎\'  '+client.name+'  \'进入聊天室'));
+			
 			//保证自己只在一个房间
 			var isjoin=true;
 			for(var a in socket.rooms){
@@ -46,7 +46,7 @@ var sockets={
 					isjoin=false;
 					}else{
 					socket.leave(roomname);
-					io.sockets.to(roomname).emit('message',getMessage(client,'离开房间'));
+					io.sockets.to(roomname).emit('system',getMessage(client,client.name+'离开房间'));
 					//更新离开房间的人数
 					var romnum=0;
 					for(var a in io.sockets.adapter.rooms[roomname]){
@@ -65,10 +65,12 @@ var sockets={
 				}
 			if(isjoin){
 				socket.join(roomid);
-				//对当前房间进行回复
-				io.sockets.in(roomid).emit('message',getMessage(client,client.name+'进入'+roomid+'号房间'));
+				//对自己进入的前房间进行回复
+				socket.emit('system',getMessage(client,'您已进入'+roomid+'号房间'));
+				//对自己进入的房间给别人回复
+				socket.broadcast.to(roomid).emit('system',getMessage(client,'欢迎\'  '+client.name+'  \'进入聊天室'));
 			}else{
-				socket.emit('message',getMessage(client,'您已经在房间内!'));
+				socket.emit('system',getMessage(client,'您已经在房间内!'));
 				}
 			//更新加入房间的人数
 			var romnum=0;
@@ -105,9 +107,10 @@ var sockets={
 				text:client.name+' 已经退出',
 			  };
 			  // 广播用户已退出
-			  socket.broadcast.emit('userleft',obj);
+			 // socket.broadcast.emit('userleft',obj);
 			  //广播用户数量
 			  --numUsers;
+			  io.sockets.to().emit('system',obj);
 			  io.sockets.emit('totalusernums','总共'+numUsers+'个用户');
 			  console.log(obj.text);
 			});
