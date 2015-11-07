@@ -31,6 +31,7 @@ var sockets={
 		
 		 //加入房间;
 		  socket.on('join room',function(myinfo){
+			socket.roomtitle=myinfo.roomtitle;
 			socket.username=myinfo.myname;
 			client.name=myinfo.myname;
 			client.roomid=myinfo.roomid;

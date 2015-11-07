@@ -11,9 +11,10 @@ window.scrollbot=function(){
 	var h=chat_content.height();
 	chat_content.scrollTop(sh-h);
 	};
-window.joinroom=function(a,b){
-	myinfo.roomid=a;
-	myinfo.roomtitle=b;
+window.joinroom=function(){
+	var args=arguments;
+	myinfo.roomid=args[0]?args[0]:1;
+	myinfo.roomtitle=args[1]?args[1]:('聊天室ID:'+args[0]);
 	socket.emit('join room',myinfo);
 	};
 window.disconn=function(){
